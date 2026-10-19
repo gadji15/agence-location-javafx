@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Compilation + application Windows autonome (jpackage)
+        run: bash scripts/package-windows.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AgenceLocation-windows
+          path: AgenceLocation-windows.zip
+
+      - name: Publication de la release (tags v*)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" AgenceLocation-windows.zip \
+            --title "Agence Location $GITHUB_REF_NAME" \
+            --notes "Application Windows autonome (Java inclus). Décompresser l'archive, importer agence_location.sql dans MySQL/MariaDB (XAMPP), puis lancer AgenceLocation.exe. Voir le README pour les détails et les comptes de démonstration."
