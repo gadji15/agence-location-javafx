@@ -1,0 +1,104 @@
+/* admin-login.css - Style pour la page de connexion admin */
+
+.root {
+    -fx-font-family: 'Segoe UI', Arial, sans-serif;
+    -fx-background-color: #f0f4f8;
+}
+
+/* Conteneur principal avec fond */
+.login-container {
+    -fx-background-image: url('../images/background.jpg');
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-background-repeat: no-repeat;
+}
+
+/* Panneau de connexion */
+.login-panel {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 12, 0.5, 0, 6);
+    -fx-padding: 30 35 30 35;
+    -fx-max-width: 400;
+    -fx-min-width: 350;
+}
+
+/* Logo */
+.logo-container {
+    -fx-alignment: center;
+    -fx-padding: 0 0 10 0;
+}
+
+.logo-image {
+    -fx-fit-width: 70;
+    -fx-fit-height: 70;
+    -fx-preserve-ratio: true;
+}
+
+/* Champs de saisie */
+.input-field {
+    -fx-pref-height: 36;
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 6;
+    -fx-border-color: #dde1e6;
+    -fx-border-radius: 6;
+    -fx-border-width: 1;
+    -fx-padding: 0 12 0 12;
+    -fx-font-size: 13;
+}
+
+.input-field:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.25), 6, 0, 0, 0);
+}
+
+.input-field .text {
+    -fx-fill: #2c3e50;
+}
+
+/* Bouton de connexion */
+.login-button {
+    -fx-pref-height: 38;
+    -fx-background-color: linear-gradient(to right, #3498db, #2980b9);
+    -fx-background-radius: 6;
+    -fx-text-fill: white;
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.3), 8, 0, 0, 3);
+    -fx-padding: 0 20 0 20;
+}
+
+.login-button:hover {
+    -fx-background-color: linear-gradient(to right, #2980b9, #2471a3);
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.5), 12, 0, 0, 4);
+}
+
+.login-button:pressed {
+    -fx-translate-y: 1;
+    -fx-effect: dropshadow(gaussian, rgba(52, 152, 219, 0.15), 4, 0, 0, 1);
+}
+
+/* Message d'erreur */
+.error-message {
+    -fx-text-fill: #e74c3c;
+    -fx-font-size: 12;
+    -fx-padding: 5 0 0 0;
+    -fx-alignment: center;
+    -fx-font-weight: 500;
+}
+
+/* Lien client */
+.client-link {
+    -fx-text-fill: #3498db;
+    -fx-font-size: 12;
+    -fx-underline: true;
+    -fx-cursor: hand;
+    -fx-padding: 10 0 0 0;
+    -fx-alignment: center;
+}
+
+.client-link:hover {
+    -fx-text-fill: #2471a3;
+}

@@ -28,3 +28,19 @@ Thumbs.db
 # Environment / secrets
 .env
 
+
+# Driver MySQL téléchargé manuellement (fourni par Maven via pom.xml)
+Drives/
+
+# Dumps SQL locaux (contiennent des données réelles) — utiliser sql/agence_location.sql
+db/
+database/
+
+# Contrats / factures générés par l'application
+pdfs/
+
+# Archive produite par scripts/package-windows.sh
+AgenceLocation-windows.zip
+
+# Téléchargé automatiquement par mvnw
+.mvn/wrapper/maven-wrapper.jar

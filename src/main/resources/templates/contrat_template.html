@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Contrat de Location</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #2ecc71;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+        .header h1 {
+            color: #2c3e50;
+            margin: 0;
+            font-size: 28px;
+        }
+        .header p {
+            color: #7f8c8d;
+            margin: 5px 0;
+        }
+        .contrat-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        .contrat-info .label {
+            font-weight: bold;
+            color: #34495e;
+        }
+        .client-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #eaf2f8;
+            border-radius: 5px;
+        }
+        .client-info h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .vehicle-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #fef9e7;
+            border-radius: 5px;
+        }
+        .vehicle-info h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .period-info {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #d5f5e3;
+            border-radius: 5px;
+        }
+        .period-info h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .total {
+            text-align: center;
+            font-size: 22px;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .conditions {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #fdf2e9;
+            border-radius: 5px;
+        }
+        .conditions h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .conditions li {
+            margin: 5px 0;
+        }
+        .signature {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+        .footer {
+            text-align: center;
+            color: #95a5a6;
+            font-size: 12px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🏢 Agence Auto</h1>
+        <p>123 Avenue de la République, Dakar</p>
+        <p>📞 +221 33 123 45 67 | ✉️ contact@agenceauto.sn</p>
+    </div>
+
+    <h2 style="text-align:center; color:#2c3e50;">📄 CONTRAT DE LOCATION</h2>
+
+    <div class="contrat-info">
+        <div><span class="label">N° Contrat :</span> #{{contratId}}</div>
+        <div><span class="label">Date de signature :</span> {{dateSignature}}</div>
+        <div><span class="label">Statut :</span> {{statut}}</div>
+    </div>
+
+    <div class="client-info">
+        <h3>👤 Client</h3>
+        <p><strong>{{clientName}}</strong></p>
+        <p>📧 {{clientEmail}}</p>
+        <p>📞 {{clientPhone}}</p>
+        <p>📍 {{clientAdresse}}</p>
+    </div>
+
+    <div class="vehicle-info">
+        <h3>🚗 Véhicule</h3>
+        <p><strong>{{vehiculeMarque}} {{vehiculeModele}}</strong></p>
+        <p>🔢 Immatriculation : {{vehiculeImmatriculation}}</p>
+        <p>📅 Année : {{vehiculeAnnee}}</p>
+        <p>⛽ Carburant : {{vehiculeCarburant}}</p>
+    </div>
+
+    <div class="period-info">
+        <h3>📅 Période de location</h3>
+        <p><strong>Date de début :</strong> {{dateDebut}}</p>
+        <p><strong>Date de fin :</strong> {{dateFin}}</p>
+        <p><strong>Durée :</strong> {{duree}} jour(s)</p>
+    </div>
+
+    <div class="total">
+        💰 MONTANT TOTAL : {{montantTotal}} €
+    </div>
+
+    <div class="conditions">
+        <h3>📋 Conditions générales</h3>
+        <ul>
+            <li>1. Le véhicule doit être restitué dans l'état où il a été pris.</li>
+            <li>2. Le kilométrage final sera contrôlé lors de la restitution.</li>
+            <li>3. Toute dégradation du véhicule sera facturée au client.</li>
+            <li>4. Le carburant doit être rendu avec le même niveau.</li>
+            <li>5. Tout retard de restitution entraînera des frais supplémentaires.</li>
+        </ul>
+    </div>
+
+    <div class="signature">
+        <p><strong>Signature du client :</strong> ___________________</p>
+        <p style="margin-top:10px;"><strong>Cachet de l'agence :</strong></p>
+    </div>
+
+    <div class="footer">
+        <p>Merci de votre confiance !</p>
+        <p>© 2026 Agence Auto - Tous droits réservés</p>
+    </div>
+</div>
+</body>
+</html>
