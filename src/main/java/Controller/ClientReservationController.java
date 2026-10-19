@@ -1,10 +1,13 @@
 package Controller;
 
+import dao.ContratDAO;
+import dao.FactureDAO;
 import dao.ParkingDAO;
 import dao.ReservationDAO;
 import dao.VehiculeDAO;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import model.Contrat;
 import model.Parking;
 import model.Reservation;
 import model.Vehicule;
@@ -24,6 +27,8 @@ public class ClientReservationController {
     private ReservationDAO reservationDAO;
     private VehiculeDAO vehiculeDAO;
     private ParkingDAO parkingDAO;  // ← AJOUTÉ
+    private ContratDAO contratDAO;
+    private FactureDAO factureDAO;
     private int clientId;
 
     public ClientReservationController(ClientReservationView view) {
@@ -31,6 +36,8 @@ public class ClientReservationController {
         this.reservationDAO = new ReservationDAO();
         this.vehiculeDAO = new VehiculeDAO();
         this.parkingDAO = new ParkingDAO();  // ← AJOUTÉ
+        this.contratDAO = new ContratDAO();
+        this.factureDAO = new FactureDAO();
         this.clientId = SessionManager.getInstance().getCurrentClientId();
 
         System.out.println("✅ ClientReservationController créé pour client ID: " + clientId);
@@ -240,12 +247,36 @@ public class ClientReservationController {
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
             if (reservationDAO.updateStatut(reservation.getIdReservation(), "ANNULEE")) {
+                libererApresAnnulation(reservation);
+
                 NotificationManager.notifyReservationCancelled(reservation.getIdReservation());
                 loadReservations();
                 loadVehicules();
             } else {
                 view.showError("❌ Erreur lors de l'annulation de la réservation.");
             }
+        }
+    }
+
+    // ===== APRÈS ANNULATION : CONTRAT + VÉHICULE (cas d'une réservation ACCEPTEE) =====
+    private void libererApresAnnulation(Reservation reservation) {
+        // Le contrat créé à l'acceptation n'a plus lieu d'être (sauf s'il est déjà facturé)
+        Contrat contrat = contratDAO.getByReservation(reservation.getIdReservation());
+        if (contrat != null && contrat.isActif() && !factureDAO.contratHasFacture(contrat.getIdContrat())) {
+            if (contratDAO.desactiver(contrat.getIdContrat())) {
+                System.out.println("📦 Contrat #" + contrat.getIdContrat() + " désactivé (réservation annulée)");
+            }
+        }
+
+        int vehiculeId = reservation.getIdVehicule();
+        if (reservationDAO.hasReservationActive(vehiculeId)) {
+            System.out.println("ℹ️ Véhicule #" + vehiculeId + " a encore des réservations actives");
+            return;
+        }
+
+        Vehicule vehicule = vehiculeDAO.getById(vehiculeId);
+        if (vehicule != null && ("RESERVE".equals(vehicule.getStatut()) || "LOUE".equals(vehicule.getStatut()))) {
+            vehiculeDAO.updateStatut(vehiculeId, "DISPONIBLE");
         }
     }
 

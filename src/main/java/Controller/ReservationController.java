@@ -472,18 +472,8 @@ public class ReservationController {
     private void libererVehiculeAutomatiquement(int vehiculeId) {
         System.out.println("🔍 Vérification du véhicule #" + vehiculeId);
 
-        List<Reservation> reservations = reservationDAO.getByVehicule(vehiculeId);
-
-        System.out.println("   Réservations restantes : " + reservations.size());
-
-        boolean hasActiveReservation = false;
-        for (Reservation r : reservations) {
-            System.out.println("   - Réservation #" + r.getIdReservation() + " : " + r.getStatut());
-            if ("ACCEPTEE".equals(r.getStatut()) || "EN_ATTENTE".equals(r.getStatut())) {
-                hasActiveReservation = true;
-                break;
-            }
-        }
+        // Une réservation ACCEPTEE dont le contrat est clôturé ne bloque plus le véhicule
+        boolean hasActiveReservation = reservationDAO.hasReservationActive(vehiculeId);
 
         if (!hasActiveReservation) {
             Vehicule vehicule = vehiculeDAO.getById(vehiculeId);

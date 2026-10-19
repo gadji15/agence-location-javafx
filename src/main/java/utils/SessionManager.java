@@ -58,8 +58,6 @@ public class SessionManager {
                 System.out.println("========================================");
                 System.out.println("🔐 AUTHENTIFICATION");
                 System.out.println("   Email: " + email);
-                System.out.println("   Mot de passe saisi: " + password);
-                System.out.println("   Mot de passe stocké: " + storedPassword);
 
                 // Comparaison en clair
                 boolean matches = storedPassword != null && storedPassword.equals(password);
@@ -135,6 +133,10 @@ public class SessionManager {
 
     public String getCurrentUserEmail() {
         return currentUserEmail;
+    }
+
+    public void setCurrentUserEmail(String email) {
+        this.currentUserEmail = email;
     }
 
     public String getCurrentUserRole() {

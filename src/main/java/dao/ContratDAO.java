@@ -221,6 +221,22 @@ public class ContratDAO {
         return false;
     }
 
+    // ===== DÉSACTIVATION (RÉSERVATION ANNULÉE AVANT LA LOCATION) =====
+    public boolean desactiver(int contratId) {
+        String sql = "UPDATE contratlocation SET actif = FALSE WHERE idContrat = ?";
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, contratId);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // ===== MISE À JOUR DU MONTANT AVEC CALCUL =====
     public boolean updateMontant(int contratId, int nombreJours, double prixJournalier,
                                  double fraisRetourDiffere, double fraisCarburant,

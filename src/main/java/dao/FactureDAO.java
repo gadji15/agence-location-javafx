@@ -99,7 +99,7 @@ public class FactureDAO {
     public List<Facture> search(String keyword) {
         List<Facture> factures = new ArrayList<>();
         String sql = "SELECT f.* FROM facture f " +
-                "INNER JOIN contrat c ON f.idContrat = c.idContrat " +
+                "INNER JOIN contratlocation c ON f.idContrat = c.idContrat " +
                 "INNER JOIN reservation r ON c.idReservation = r.idReservation " +
                 "INNER JOIN client cl ON r.idClient = cl.idClient " +
                 "WHERE cl.nom LIKE ? OR cl.prenom LIKE ?";
