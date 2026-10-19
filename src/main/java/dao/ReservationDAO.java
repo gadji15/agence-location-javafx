@@ -291,6 +291,32 @@ public class ReservationDAO {
         return false;
     }
 
+    /**
+     * Indique si le véhicule a encore une réservation active : EN_ATTENTE, ou ACCEPTEE
+     * dont le contrat n'est pas clôturé (une location terminée ne bloque plus le véhicule).
+     */
+    public boolean hasReservationActive(int vehiculeId) {
+        String sql = "SELECT COUNT(*) FROM reservation r " +
+                "LEFT JOIN contratlocation c ON c.idReservation = r.idReservation " +
+                "WHERE r.idVehicule = ? AND r.statut IN ('EN_ATTENTE', 'ACCEPTEE') " +
+                "AND (c.idContrat IS NULL OR c.actif = TRUE)";
+
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, vehiculeId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     public int count() {
         String sql = "SELECT COUNT(*) FROM reservation";
 

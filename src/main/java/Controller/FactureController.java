@@ -19,6 +19,7 @@ public class FactureController {
     private FactureManagementView view;
     private FactureDAO factureDAO;
     private ContratDAO contratDAO;
+    private ReservationDAO reservationDAO;
     private ClientDao clientDAO;
     private VehiculeDAO vehiculeDAO;
     private PaiementDAO paiementDAO;
@@ -28,6 +29,7 @@ public class FactureController {
         this.view = view;
         this.factureDAO = new FactureDAO();
         this.contratDAO = new ContratDAO();
+        this.reservationDAO = new ReservationDAO();
         this.clientDAO = new ClientDao();
         this.vehiculeDAO = new VehiculeDAO();
         this.paiementDAO = new PaiementDAO();
@@ -214,8 +216,19 @@ public class FactureController {
             return;
         }
 
-        Client client = clientDAO.getById(1);
-        Vehicule vehicule = vehiculeDAO.getById(1);
+        Reservation reservation = reservationDAO.getById(contrat.getIdReservation());
+        if (reservation == null) {
+            NotificationManager.showError("❌ Erreur", "Réservation non trouvée !");
+            return;
+        }
+
+        Client client = clientDAO.getById(reservation.getIdClient());
+        Vehicule vehicule = vehiculeDAO.getById(reservation.getIdVehicule());
+
+        if (client == null || vehicule == null) {
+            NotificationManager.showError("❌ Erreur", "Client ou véhicule non trouvé !");
+            return;
+        }
 
         String pdfPath = PDFGenerator.generateFacturePDF(facture, contrat, client, vehicule);
 

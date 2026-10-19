@@ -86,11 +86,20 @@ public class ClientProfilController {
             return;
         }
 
+        int userId = SessionManager.getInstance().getCurrentUserId();
+        if (utilisateurDAO.emailExistsExcept(client.getEmail(), userId)) {
+            view.showError("⚠️ Cet email est déjà utilisé par un autre compte !");
+            return;
+        }
+
         Client existingClient = clientDAO.getById(clientId);
         if (existingClient == null) {
             view.showError("❌ Client non trouvé !");
             return;
         }
+
+        // L'email du client sert aussi d'identifiant de connexion (table utilisateur)
+        boolean emailModifie = !existingClient.getEmail().equals(client.getEmail());
 
         existingClient.setNom(client.getNom());
         existingClient.setPrenom(client.getPrenom());
@@ -99,6 +108,14 @@ public class ClientProfilController {
         existingClient.setAdresse(client.getAdresse());
 
         if (clientDAO.update(existingClient)) {
+            if (emailModifie) {
+                if (!utilisateurDAO.updateEmail(userId, existingClient.getEmail())) {
+                    view.showError("❌ Profil mis à jour, mais erreur lors de la mise à jour de l'email de connexion.");
+                    return;
+                }
+                SessionManager.getInstance().setCurrentUserEmail(existingClient.getEmail());
+            }
+
             view.showSuccess("✅ Profil mis à jour avec succès !");
             view.setEditingMode(false);
             loadProfil();
