@@ -26,6 +26,7 @@ public class VehiculeDAO {
             stmt.setInt(6, vehicule.getKilometrage());
             stmt.setDouble(7, vehicule.getPrixJournalier());
             stmt.setString(8, vehicule.getStatut());
+            
 
             if (vehicule.getIdParking() != null) {
                 stmt.setInt(9, vehicule.getIdParking());

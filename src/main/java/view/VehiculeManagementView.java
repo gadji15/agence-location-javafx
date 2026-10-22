@@ -5,6 +5,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import model.Parking;
 import model.Vehicule;
 import utils.FormatUtil;
 
@@ -41,7 +42,7 @@ public class VehiculeManagementView {
     private TextField kilometrageField;
     private TextField prixField;
     private ComboBox<String> statutComboBox;
-    private ComboBox<String> parkingComboBox;
+    private ComboBox<Parking> parkingComboBox;
     private CheckBox actifCheckBox;
 
     private Button saveButton;
@@ -379,6 +380,12 @@ public class VehiculeManagementView {
         kilometrageField.setText(String.valueOf(vehicule.getKilometrage()));
         prixField.setText(String.valueOf((int) vehicule.getPrixJournalier()));
         statutComboBox.setValue(vehicule.getStatut());
+        parkingComboBox.setValue(vehicule.getIdParking() == null
+                ? null
+                : parkingComboBox.getItems().stream()
+                        .filter(parking -> parking.getIdParking() == vehicule.getIdParking())
+                        .findFirst()
+                        .orElse(null));
         actifCheckBox.setSelected(vehicule.isActif());
 
         deleteButton.setVisible(true);
@@ -443,7 +450,7 @@ public class VehiculeManagementView {
     public TextField getKilometrageField() { return kilometrageField; }
     public TextField getPrixField() { return prixField; }
     public ComboBox<String> getStatutComboBox() { return statutComboBox; }
-    public ComboBox<String> getParkingComboBox() { return parkingComboBox; }
+    public ComboBox<Parking> getParkingComboBox() { return parkingComboBox; }
     public CheckBox getActifCheckBox() { return actifCheckBox; }
     public Button getSaveButton() { return saveButton; }
     public Button getCancelButton() { return cancelButton; }

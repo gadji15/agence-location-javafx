@@ -2,8 +2,10 @@ package Controller;
 
 
 import dao.VehiculeDAO;
+import dao.ParkingDAO;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import model.Parking;
 import model.Vehicule;
 import view.VehiculeManagementView;
 
@@ -14,10 +16,12 @@ public class VehiculeController {
 
     private VehiculeManagementView view;
     private VehiculeDAO vehiculeDAO;
+    private ParkingDAO parkingDAO;
 
     public VehiculeController(VehiculeManagementView view) {
         this.view = view;
         this.vehiculeDAO = new VehiculeDAO();
+        this.parkingDAO = new ParkingDAO();
 
         // Configurer le callback pour la suppression depuis le tableau
         view.setDeleteCallback(new VehiculeManagementView.DeleteCallback() {
@@ -30,6 +34,7 @@ public class VehiculeController {
         });
 
         initEventHandlers();
+        loadParkings();
         loadVehicules();
     }
 
@@ -49,11 +54,26 @@ public class VehiculeController {
 
         // Supprimer (bouton du formulaire)
         view.getDeleteButton().setOnAction(e -> deleteVehicule());
+        view.getParkingComboBox().setOnShowing(e -> loadParkings());
     }
 
     private void loadVehicules() {
         List<Vehicule> vehicules = vehiculeDAO.getAll();
         view.refreshTable(vehicules);
+    }
+
+    private void loadParkings() {
+        Integer selectedParkingId = view.getParkingComboBox().getValue() == null
+                ? null
+                : view.getParkingComboBox().getValue().getIdParking();
+        List<Parking> parkings = parkingDAO.getAll();
+        view.getParkingComboBox().getItems().setAll(parkings);
+        if (selectedParkingId != null) {
+            view.getParkingComboBox().getItems().stream()
+                    .filter(parking -> parking.getIdParking() == selectedParkingId)
+                    .findFirst()
+                    .ifPresent(parking -> view.getParkingComboBox().setValue(parking));
+        }
     }
 
     private void searchVehicules() {
@@ -76,7 +96,8 @@ public class VehiculeController {
         String kilometrageStr = view.getKilometrageField().getText().trim();
         String prixStr = view.getPrixField().getText().trim();
         String statut = view.getStatutComboBox().getValue();
-        // String parking = view.getParkingComboBox().getValue();
+        Parking parking = view.getParkingComboBox().getValue();
+        Integer idParking = parking == null ? null : parking.getIdParking();
         boolean actif = view.getActifCheckBox().isSelected();
 
         // Validation des champs obligatoires
@@ -147,7 +168,7 @@ public class VehiculeController {
             Vehicule newVehicule = new Vehicule(
                     marque, modele, annee, immatriculation,
                     carburant, kilometrage, prix, statut,
-                    null, actif
+                    idParking, actif
             );
 
             if (vehiculeDAO.create(newVehicule)) {
@@ -172,7 +193,7 @@ public class VehiculeController {
             selected.setKilometrage(kilometrage);
             selected.setPrixJournalier(prix);
             selected.setStatut(statut);
-            // selected.setIdParking(null);
+            selected.setIdParking(idParking);
             selected.setActif(actif);
 
             if (vehiculeDAO.update(selected)) {
