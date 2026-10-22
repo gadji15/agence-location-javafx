@@ -57,16 +57,10 @@ La modélisation (MEA, MLD) et le cahier des charges sont dans [`docs/`](docs/).
 
 ### 1. Base de données
 
-**Option A — XAMPP (recommandé sous Windows)**
-1. Démarrer **MySQL** dans le panneau XAMPP.
+**XAMPP ou WampServer sous Windows**
+1. Démarrer **MySQL/MariaDB** depuis le panneau de contrôle XAMPP ou WampServer.
 2. Ouvrir phpMyAdmin → onglet **Importer** → choisir [`sql/agence_location.sql`](sql/agence_location.sql).
    Le script crée la base `agence_location` avec des données de démonstration.
-
-**Option B — Docker**
-```bash
-docker compose up -d
-```
-La base est exposée sur le port **3307** (pour ne pas entrer en conflit avec XAMPP). Lancer ensuite l'application avec `DB_URL=jdbc:mysql://localhost:3307/agence_location` et `DB_PASSWORD=root` (voir *Configuration*).
 
 ### 2. Lancer l'application
 
@@ -93,7 +87,7 @@ Si aucun administrateur n'existe, l'application crée automatiquement le compte 
 
 ## Configuration
 
-Par défaut, l'application se connecte à `jdbc:mysql://localhost:3306/agence_location` avec l'utilisateur `root` sans mot de passe (configuration XAMPP). Ces valeurs se surchargent par variables d'environnement :
+Par défaut, l'application se connecte à `jdbc:mysql://localhost:3306/agence_location` avec l'utilisateur `root` sans mot de passe. Adaptez ces valeurs si votre configuration XAMPP/WampServer utilise un autre port, utilisateur ou mot de passe. Elles se surchargent par variables d'environnement :
 
 | Variable | Défaut |
 |---|---|
