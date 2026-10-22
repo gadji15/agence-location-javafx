@@ -1,15 +1,21 @@
 package Controller;
 
 import dao.ContratDAO;
+import dao.ClientDao;
 import dao.FactureDAO;
 import dao.ReservationDAO;
-import javafx.scene.control.Alert;
+import dao.VehiculeDAO;
 import model.Contrat;
 import model.Facture;
 import model.Reservation;
+import model.Client;
+import model.Vehicule;
+import utils.NotificationManager;
+import utils.PDFGenerator;
 import utils.SessionManager;
 import view.ClientFactureView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +25,8 @@ public class ClientFactureController {
     private FactureDAO factureDAO;
     private ContratDAO contratDAO;
     private ReservationDAO reservationDAO;
+    private ClientDao clientDAO;
+    private VehiculeDAO vehiculeDAO;
     private int clientId;
 
     public ClientFactureController(ClientFactureView view) {
@@ -26,6 +34,8 @@ public class ClientFactureController {
         this.factureDAO = new FactureDAO();
         this.contratDAO = new ContratDAO();
         this.reservationDAO = new ReservationDAO();
+        this.clientDAO = new ClientDao();
+        this.vehiculeDAO = new VehiculeDAO();
         this.clientId = SessionManager.getInstance().getCurrentClientId();
 
         System.out.println("✅ ClientFactureController créé pour client ID: " + clientId);
@@ -160,18 +170,31 @@ public class ClientFactureController {
     private void telechargerPDF(Facture facture) {
         if (facture == null) return;
 
-        // TODO: Générer et télécharger le PDF
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Téléchargement PDF");
-        alert.setHeaderText("Facture #" + facture.getIdFacture());
-        alert.setContentText(
-                "📄 Génération du PDF en cours...\n\n" +
-                        "🔹 Facture: #" + facture.getIdFacture() + "\n" +
-                        "🔹 Contrat: #" + facture.getIdContrat() + "\n" +
-                        "🔹 Montant: " + String.format("%.2f €", facture.getMontantTotal()) + "\n" +
-                        "🔹 Statut: " + facture.getStatut() + "\n\n" +
-                        "🔜 Fonctionnalité à implémenter : Génération PDF"
-        );
-        alert.showAndWait();
+        Contrat contrat = contratDAO.getById(facture.getIdContrat());
+        if (contrat == null) {
+            NotificationManager.showError("Erreur", "Contrat associé à la facture non trouvé.");
+            return;
+        }
+
+        Reservation reservation = reservationDAO.getById(contrat.getIdReservation());
+        if (reservation == null || reservation.getIdClient() != clientId) {
+            NotificationManager.showError("Erreur", "Réservation associée à la facture non trouvée.");
+            return;
+        }
+
+        Client client = clientDAO.getById(reservation.getIdClient());
+        Vehicule vehicule = vehiculeDAO.getById(reservation.getIdVehicule());
+        if (client == null || vehicule == null) {
+            NotificationManager.showError("Erreur", "Client ou véhicule associé à la facture non trouvé.");
+            return;
+        }
+
+        try {
+            String pdfPath = PDFGenerator.generateFacturePDF(facture, contrat, client, vehicule);
+            NotificationManager.showSuccess("PDF généré",
+                    "Facture #" + facture.getIdFacture() + " générée.\nFichier : " + pdfPath);
+        } catch (IOException | RuntimeException e) {
+            NotificationManager.showError("Erreur", "Impossible de générer le PDF : " + e.getMessage());
+        }
     }
 }

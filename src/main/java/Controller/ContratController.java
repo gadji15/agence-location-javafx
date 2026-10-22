@@ -419,14 +419,14 @@ public class ContratController {
             return;
         }
 
-        String pdfPath = PDFGenerator.generateContratPDF(contrat, client, vehicule);
-
-        if (pdfPath != null && !pdfPath.isEmpty()) {
+        try {
+            String pdfPath = PDFGenerator.generateContratPDF(contrat, client, vehicule);
             NotificationManager.showSuccess("📄 Contrat généré",
                     "Le contrat #" + contrat.getIdContrat() + " a été généré en PDF.\n" +
-                            "Montant : " + FormatUtil.formatFCFA(contrat.getMontantTotal()));
-        } else {
-            NotificationManager.showError("❌ Erreur", "Erreur lors de la génération du PDF.");
+                            "Montant : " + FormatUtil.formatFCFA(contrat.getMontantTotal()) +
+                            "\nFichier : " + pdfPath);
+        } catch (java.io.IOException | RuntimeException e) {
+            NotificationManager.showError("❌ Erreur", "Impossible de générer le PDF : " + e.getMessage());
         }
     }
 

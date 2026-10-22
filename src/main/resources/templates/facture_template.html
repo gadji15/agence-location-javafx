@@ -1,145 +1,72 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Facture</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .header {
-            text-align: center;
-            border-bottom: 2px solid #3498db;
-            padding-bottom: 20px;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            color: #2c3e50;
-            margin: 0;
-            font-size: 28px;
-        }
-        .header p {
-            color: #7f8c8d;
-            margin: 5px 0;
-        }
-        .facture-info {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-        }
-        .facture-info .label {
-            font-weight: bold;
-            color: #34495e;
-        }
-        .client-info {
-            margin-bottom: 20px;
-            padding: 15px;
-            background-color: #eaf2f8;
-            border-radius: 5px;
-        }
-        .client-info h3 {
-            margin-top: 0;
-            color: #2c3e50;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-        }
-        table th {
-            background-color: #3498db;
-            color: white;
-            padding: 10px;
-            text-align: left;
-        }
-        table td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-        }
-        .total {
-            text-align: right;
-            font-size: 18px;
-            font-weight: bold;
-            color: #2c3e50;
-            padding: 15px;
-            border-top: 2px solid #3498db;
-            margin-top: 10px;
-        }
-        .footer {
-            text-align: center;
-            color: #95a5a6;
-            font-size: 12px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #ddd;
-        }
+    <style type="text/css">
+        @page { size: A4; margin: 18mm; }
+        body { font-family: sans-serif; color: #263746; font-size: 10pt; }
+        .header { text-align: center; border-bottom: 2px solid #2878a5; padding-bottom: 12px; }
+        .header h1 { margin: 0 0 6px; color: #1f3b50; font-size: 22pt; }
+        .header p { margin: 3px 0; color: #526575; }
+        h2 { text-align: center; color: #1f3b50; margin: 18px 0; }
+        h3 { color: #1f3b50; margin: 0 0 8px; }
+        table { width: 100%; border-collapse: collapse; margin: 14px 0; }
+        th { background: #2878a5; color: #ffffff; text-align: left; }
+        th, td { padding: 8px; border: 1px solid #d5dde3; }
+        .info td { border: none; padding: 3px 8px 3px 0; }
+        .client { background: #eef5f8; padding: 12px; margin: 12px 0; }
+        .client p { margin: 4px 0; }
+        .amount { text-align: right; white-space: nowrap; }
+        .summary { width: 58%; margin-left: auto; }
+        .summary td { padding: 6px 8px; }
+        .grand-total { font-size: 12pt; font-weight: bold; background: #e8f2f7; }
+        .footer { text-align: center; color: #667784; font-size: 9pt; margin-top: 28px; border-top: 1px solid #d5dde3; padding-top: 10px; }
     </style>
 </head>
 <body>
-<div class="container">
-    <div class="header">
-        <h1>🏢 Agence Auto</h1>
-        <p>123 Avenue de la République, Dakar</p>
-        <p>📞 +221 33 123 45 67 | ✉️ contact@agenceauto.sn</p>
-    </div>
-
-    <h2 style="text-align:center; color:#2c3e50;">FACTURE</h2>
-
-    <div class="facture-info">
-        <div><span class="label">N° Facture :</span> #{{factureId}}</div>
-        <div><span class="label">Date :</span> {{date}}</div>
-        <div><span class="label">Statut :</span> {{statut}}</div>
-    </div>
-
-    <div class="client-info">
-        <h3>👤 Client</h3>
-        <p><strong>{{clientName}}</strong></p>
-        <p>📧 {{clientEmail}}</p>
-        <p>📞 {{clientPhone}}</p>
-        <p>📍 {{clientAdresse}}</p>
-    </div>
-
-    <table>
-        <thead>
-        <tr>
-            <th>Description</th>
-            <th>Quantité</th>
-            <th>Prix unitaire</th>
-            <th>Total</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <td>Location - {{vehiculeMarque}} {{vehiculeModele}}</td>
-            <td>{{jours}} jour(s)</td>
-            <td>{{prixJournalier}} €</td>
-            <td>{{montantTotal}} €</td>
-        </tr>
-        </tbody>
-    </table>
-
-    <div class="total">
-        TOTAL À PAYER : {{montantTotal}} €
-    </div>
-
-    <div class="footer">
-        <p>Merci de votre confiance !</p>
-        <p>© 2026 Agence Auto - Tous droits réservés</p>
-    </div>
+<div class="header">
+    <h1>Agence Auto</h1>
+    <p>Location de véhicules — 123 Avenue de la République, Dakar</p>
+    <p>Tél. : +221 33 123 45 67 | Email : contact@agenceauto.sn</p>
+</div>
+<h2>FACTURE</h2>
+<table class="info">
+    <tr><td><strong>N° Facture :</strong> #{{factureId}}</td><td><strong>Date d'émission :</strong> {{date}}</td></tr>
+    <tr><td><strong>Statut :</strong> {{statut}}</td><td></td></tr>
+</table>
+<div class="client">
+    <h3>Client</h3>
+    <p><strong>{{clientName}}</strong></p>
+    <p>{{clientAdresse}}</p>
+    <p>Email : {{clientEmail}} | Tél. : {{clientPhone}}</p>
+</div>
+<table>
+    <thead>
+    <tr><th>Description</th><th>Quantité</th><th>Prix unitaire</th><th class="amount">Montant</th></tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>Location — {{vehiculeMarque}} {{vehiculeModele}} ({{vehiculeImmatriculation}})</td>
+        <td>{{jours}} jour(s)</td>
+        <td>{{prixJournalier}}</td>
+        <td class="amount">{{sousTotal}}</td>
+    </tr>
+    <tr><td>Frais de retour différé</td><td></td><td></td><td class="amount">{{fraisRetourDiffere}}</td></tr>
+    <tr><td>Frais de carburant</td><td></td><td></td><td class="amount">{{fraisCarburant}}</td></tr>
+    <tr><td>Frais de retard</td><td></td><td></td><td class="amount">{{fraisRetard}}</td></tr>
+    <tr><td>Frais de dégradation</td><td></td><td></td><td class="amount">{{fraisDegradation}}</td></tr>
+    <tr><td>Remise</td><td></td><td></td><td class="amount">- {{remise}}</td></tr>
+    </tbody>
+</table>
+<table class="summary">
+    <tr class="grand-total"><td>Total facture</td><td class="amount">{{montantTotal}}</td></tr>
+    <tr><td>Montant payé</td><td class="amount">{{montantPaye}}</td></tr>
+    <tr><td>Reste à payer</td><td class="amount">{{resteAPayer}}</td></tr>
+</table>
+<div class="footer">
+    <p>Merci de votre confiance !</p>
+    <p>Agence Auto — Tous droits réservés</p>
 </div>
 </body>
 </html>

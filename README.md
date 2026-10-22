@@ -10,8 +10,8 @@ Application desktop Java (JavaFX + MySQL/MariaDB) qui informatise la gestion d'u
 - Véhicules : CRUD, recherche (marque, modèle, immatriculation), statut (disponible, réservé, loué, maintenance…)
 - Parkings : CRUD, capacité
 - Réservations : validation / refus / annulation, création directe pour un client au comptoir, contrôle de disponibilité du véhicule sur la période
-- Contrats : créés automatiquement à la validation d'une réservation ; clôture avec état du retour, kilométrage, frais (retard, carburant, dégradation, remise)
-- Factures : générées automatiquement à la clôture du contrat, statut impayée / partielle / payée
+- Contrats : créés automatiquement à la validation d'une réservation ; clôture avec état du retour, kilométrage, frais (retard, carburant, dégradation, remise) et génération de contrats PDF
+- Factures : générées automatiquement à la clôture du contrat, statut impayée / partielle / payée, génération de factures PDF détaillées en FCFA
 - Paiements : espèces, carte, virement, chèque, Wave, Orange Money, Free Money (montants en FCFA)
 - Sanctions : créées automatiquement en cas de dégradation, levées au paiement de la facture
 - Statistiques : chiffre d'affaires, évolution mensuelle, top véhicules / clients
@@ -105,5 +105,4 @@ Par défaut, l'application se connecte à `jdbc:mysql://localhost:3306/agence_lo
 
 Projet pédagogique — points à améliorer avant un usage réel :
 - les mots de passe sont stockés en clair (prévoir un hachage BCrypt, la dépendance `jbcrypt` est déjà présente) ;
-- les « PDF » de contrats et factures sont générés au format texte dans `pdfs/` ;
 - l'envoi d'e-mails est simulé (affichage console).

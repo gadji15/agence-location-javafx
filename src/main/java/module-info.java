@@ -11,6 +11,7 @@ module agencelocation.agencelocationjavafx {
     requires eu.hansolo.tilesfx;
     requires java.sql;
     requires jbcrypt;
+    requires openhtmltopdf.pdfbox;
 
     opens agencelocation.agencelocationjavafx to javafx.fxml;
     exports agencelocation.agencelocationjavafx;
