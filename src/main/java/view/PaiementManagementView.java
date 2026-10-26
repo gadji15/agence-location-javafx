@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import model.Paiement;
 import utils.FormatUtil;
+import utils.PaymentModeIcons;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -44,7 +45,7 @@ public class PaiementManagementView {
         root.setSpacing(15);
         root.setPadding(new Insets(10));
 
-        Label titleLabel = new Label("💳 Historique des Paiements");
+        Label titleLabel = new Label("Historique des paiements");
         titleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         HBox searchBar = createSearchBar();
@@ -61,7 +62,7 @@ public class PaiementManagementView {
         searchBar.setAlignment(Pos.CENTER_LEFT);
         searchBar.setPadding(new Insets(5, 0, 10, 0));
 
-        Label searchLabel = new Label("🔍 Rechercher :");
+        Label searchLabel = new Label("Rechercher :");
         searchLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: #34495e;");
 
         searchField = new TextField();
@@ -72,17 +73,21 @@ public class PaiementManagementView {
         searchButton = new Button("Rechercher");
         searchButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-height: 32; -fx-padding: 0 15; -fx-background-radius: 4; -fx-cursor: hand;");
 
-        refreshButton = new Button("🔄 Rafraîchir");
+        refreshButton = new Button("Rafraîchir");
         refreshButton.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; -fx-pref-height: 32; -fx-padding: 0 15; -fx-background-radius: 4; -fx-cursor: hand;");
 
         Label filterLabel = new Label("Mode :");
         filterLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: #34495e; -fx-padding: 0 0 0 15;");
 
         modeFilterComboBox = new ComboBox<>();
-        modeFilterComboBox.getItems().addAll("Tous", "ESPECE", "CARTE", "VIREMENT", "CHEQUE", "WAVE", "ORANGE_MONEY", "FREE_MONEY");
+        modeFilterComboBox.getItems().addAll(
+                "Tous", "ESPECE", "CARTE", "VIREMENT", "CHEQUE",
+                "MOBILE_MONEY", "WAVE", "ORANGE_MONEY", "FREE_MONEY");
         modeFilterComboBox.setValue("Tous");
         modeFilterComboBox.setPrefWidth(150);
         modeFilterComboBox.getStyleClass().add("input-field");
+        modeFilterComboBox.setCellFactory(list -> new PaymentModeCell());
+        modeFilterComboBox.setButtonCell(new PaymentModeCell());
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -97,22 +102,22 @@ public class PaiementManagementView {
         statsBar.setAlignment(Pos.CENTER_LEFT);
         statsBar.setPadding(new Insets(5, 0, 10, 0));
 
-        Label statsLabel = new Label("📊 Statistiques :");
+        Label statsLabel = new Label("Statistiques :");
         statsLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: #34495e;");
 
         Label totalLabel = new Label("Total: 0");
         totalLabel.setStyle("-fx-text-fill: #2c3e50;");
         totalLabel.setId("totalLabel");
 
-        Label montantLabel = new Label("💰 Montant total: 0 FCFA");
+        Label montantLabel = new Label("Montant encaissé : 0 FCFA");
         montantLabel.setStyle("-fx-text-fill: #2ecc71; -fx-font-weight: bold;");
         montantLabel.setId("montantLabel");
 
-        Label especeLabel = new Label("💵 Espèces: 0");
+        Label especeLabel = new Label("Paiements en espèces : 0");
         especeLabel.setStyle("-fx-text-fill: #27ae60;");
         especeLabel.setId("especeLabel");
 
-        Label mobileLabel = new Label("📱 Mobile: 0");
+        Label mobileLabel = new Label("Paiements mobiles : 0");
         mobileLabel.setStyle("-fx-text-fill: #3498db;");
         mobileLabel.setId("mobileLabel");
 
@@ -134,19 +139,14 @@ public class PaiementManagementView {
         colFacture.setPrefWidth(80);
 
         colMode = new TableColumn<>("Mode");
-        colMode.setCellValueFactory(data -> {
-            String mode = data.getValue().getMode();
-            String emoji = switch (mode) {
-                case "ESPECE" -> "💵";
-                case "CARTE" -> "💳";
-                case "VIREMENT" -> "🏦";
-                case "CHEQUE" -> "📝";
-                case "WAVE" -> "🌊";
-                case "ORANGE_MONEY" -> "🟠";
-                case "FREE_MONEY" -> "🔴";
-                default -> "💰";
-            };
-            return new SimpleStringProperty(emoji + " " + mode);
+        colMode.setCellValueFactory(data -> new SimpleStringProperty(data.getValue().getMode()));
+        colMode.setCellFactory(column -> new TableCell<>() {
+            @Override
+            protected void updateItem(String mode, boolean empty) {
+                super.updateItem(mode, empty);
+                setText(null);
+                setGraphic(empty || mode == null ? null : PaymentModeIcons.graphic(mode));
+            }
         });
         colMode.setPrefWidth(140);
 
@@ -199,9 +199,9 @@ public class PaiementManagementView {
                 if (id != null) {
                     switch (id) {
                         case "totalLabel" -> label.setText("Total: " + total);
-                        case "montantLabel" -> label.setText("💰 Montant total: " + FormatUtil.formatFCFA(montantTotal));
-                        case "especeLabel" -> label.setText("💵 Espèces: " + especes);
-                        case "mobileLabel" -> label.setText("📱 Mobile: " + mobiles);
+                        case "montantLabel" -> label.setText("Montant encaissé : " + FormatUtil.formatFCFA(montantTotal));
+                        case "especeLabel" -> label.setText("Paiements en espèces : " + especes);
+                        case "mobileLabel" -> label.setText("Paiements mobiles : " + mobiles);
                     }
                 }
             }
@@ -215,4 +215,14 @@ public class PaiementManagementView {
     public Button getRefreshButton() { return refreshButton; }
     public ComboBox<String> getModeFilterComboBox() { return modeFilterComboBox; }
     public TableView<Paiement> getPaiementTable() { return paiementTable; }
+
+    private static class PaymentModeCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String mode, boolean empty) {
+            super.updateItem(mode, empty);
+            setText(null);
+            setGraphic(empty || mode == null ? null :
+                    "Tous".equals(mode) ? new Label("Tous les modes") : PaymentModeIcons.graphic(mode));
+        }
+    }
 }

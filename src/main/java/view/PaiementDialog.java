@@ -9,6 +9,7 @@ import javafx.stage.Stage;
 import model.Facture;
 import model.Paiement;
 import utils.FormatUtil;
+import utils.PaymentModeIcons;
 
 import java.time.LocalDateTime;
 
@@ -60,7 +61,7 @@ public class PaiementDialog {
         root.setStyle("-fx-background-color: white;");
 
         // ===== TITRE =====
-        Label titleLabel = new Label("💰 Enregistrer un paiement");
+        Label titleLabel = new Label("Enregistrer un paiement");
         titleLabel.setStyle("-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         // ===== INFO FACTURE =====
@@ -88,14 +89,10 @@ public class PaiementDialog {
 
         modeComboBox = new ComboBox<>();
         modeComboBox.getItems().addAll(
-                "💵 ESPECE",
-                "💳 CARTE",
-                "🏦 VIREMENT",
-                "📝 CHEQUE",
-                "🌊 WAVE",
-                "🟠 ORANGE_MONEY",
-                "🔴 FREE_MONEY"
-        );
+                "ESPECE", "CARTE", "VIREMENT", "CHEQUE",
+                "MOBILE_MONEY", "WAVE", "ORANGE_MONEY", "FREE_MONEY");
+        modeComboBox.setCellFactory(list -> new PaymentModeCell());
+        modeComboBox.setButtonCell(new PaymentModeCell());
         modeComboBox.setPromptText("Sélectionner un mode...");
         modeComboBox.setPrefWidth(300);
         modeComboBox.setStyle("-fx-pref-height: 38; -fx-background-color: #f8f9fa; " +
@@ -160,13 +157,13 @@ public class PaiementDialog {
         buttonBox.setAlignment(Pos.CENTER_RIGHT);
         buttonBox.setPadding(new Insets(10, 0, 0, 0));
 
-        Button cancelButton = new Button("❌ Annuler");
+        Button cancelButton = new Button("Annuler");
         cancelButton.setStyle("-fx-background-color: #95a5a6; -fx-text-fill: white; " +
                 "-fx-pref-height: 40; -fx-padding: 0 25; -fx-background-radius: 6; " +
                 "-fx-cursor: hand; -fx-font-size: 14;");
         cancelButton.setOnAction(e -> dialogStage.close());
 
-        Button saveButton = new Button("💾 Enregistrer");
+        Button saveButton = new Button("Enregistrer");
         saveButton.setStyle("-fx-background-color: #2ecc71; -fx-text-fill: white; " +
                 "-fx-pref-height: 40; -fx-padding: 0 25; -fx-background-radius: 6; " +
                 "-fx-cursor: hand; -fx-font-weight: bold; -fx-font-size: 14;");
@@ -197,7 +194,7 @@ public class PaiementDialog {
         recapBox.setStyle("-fx-background-color: #f8f9fa; -fx-background-radius: 8; " +
                 "-fx-border-color: #e0e5ec; -fx-border-radius: 8; -fx-border-width: 1;");
 
-        Label recapTitle = new Label("📋 Récapitulatif");
+        Label recapTitle = new Label("Récapitulatif");
         recapTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         // Montant total
@@ -281,12 +278,9 @@ public class PaiementDialog {
             return;
         }
 
-        // Extraire le mode (enlever l'emoji + espace)
-        String mode = modeStr.substring(modeStr.indexOf(" ") + 1);
-
         // Créer le paiement
         paiement.setIdFacture(facture.getIdFacture());
-        paiement.setMode(mode);
+        paiement.setMode(modeStr);
         paiement.setMontantPaye(montant);
         paiement.setDevise("XOF");
         paiement.setDatePaiement(LocalDateTime.now());
@@ -313,5 +307,14 @@ public class PaiementDialog {
 
     public void showAndWait() {
         dialogStage.showAndWait();
+    }
+
+    private static class PaymentModeCell extends ListCell<String> {
+        @Override
+        protected void updateItem(String mode, boolean empty) {
+            super.updateItem(mode, empty);
+            setText(null);
+            setGraphic(empty || mode == null ? null : PaymentModeIcons.graphic(mode));
+        }
     }
 }

@@ -1,9 +1,12 @@
 package dao;
 
-
 import utils.DatabaseConnection;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,164 +14,151 @@ import java.util.Map;
 
 public class StatistiqueDAO {
 
-    // ===== STATISTIQUES GÉNÉRALES =====
-
-    public Map<String, Object> getGeneralStats() {
+    public Map<String, Object> getGeneralStats(int annee, Integer mois) throws SQLException {
         Map<String, Object> stats = new HashMap<>();
+        String reservationPeriod = periodPredicate("dateDemande", mois);
+        String paymentPeriod = periodPredicate("datePaiement", mois);
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-
-            // Total clients
             stats.put("totalClients", getCount(conn, "client"));
-
-            // Total véhicules
             stats.put("totalVehicules", getCount(conn, "vehicule"));
-
-            // Total réservations
-            stats.put("totalReservations", getCount(conn, "reservation"));
-
-            // Chiffre d'affaires total
-            stats.put("caTotal", getSum(conn, "facture", "montantTotal", "statut = 'PAYEE'"));
-
-        } catch (SQLException e) {
-            e.printStackTrace();
+            stats.put("totalReservations", getPeriodCount(conn,
+                    "SELECT COUNT(*) FROM reservation WHERE " + reservationPeriod, annee, mois));
+            stats.put("caTotal", getPeriodSum(conn,
+                    "SELECT COALESCE(SUM(montantPaye), 0) FROM paiement WHERE devise = 'XOF' AND " +
+                            paymentPeriod, annee, mois));
         }
-
         return stats;
     }
 
-    public List<Map<String, Object>> getMonthlyEvolution(int annee) {
+    public List<Map<String, Object>> getMonthlyEvolution(int annee, Integer mois) throws SQLException {
         List<Map<String, Object>> evolution = new ArrayList<>();
-
-        String sql = "SELECT MONTH(dateDemande) as mois, COUNT(*) as total " +
-                "FROM reservation WHERE YEAR(dateDemande) = ? " +
-                "GROUP BY MONTH(dateDemande) ORDER BY mois";
+        String sql = "SELECT MONTH(dateDemande) AS mois, COUNT(*) AS total " +
+                "FROM reservation WHERE YEAR(dateDemande) = ?" +
+                (mois == null ? "" : " AND MONTH(dateDemande) = ?") +
+                " GROUP BY MONTH(dateDemande) ORDER BY mois";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setInt(1, annee);
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                Map<String, Object> month = new HashMap<>();
-                month.put("mois", rs.getInt("mois"));
-                month.put("total", rs.getInt("total"));
-                month.put("acceptees", 0);
-                month.put("en_attente", 0);
-                month.put("refusees", 0);
-                evolution.add(month);
+            bindPeriod(stmt, 1, annee, mois);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> month = new HashMap<>();
+                    month.put("mois", rs.getInt("mois"));
+                    month.put("total", rs.getInt("total"));
+                    evolution.add(month);
+                }
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
         return evolution;
     }
 
-    public List<Map<String, Object>> getTopVehicules() {
+    public List<Map<String, Object>> getTopVehicules(int annee, Integer mois) throws SQLException {
         List<Map<String, Object>> topVehicules = new ArrayList<>();
-
-        String sql = "SELECT v.marque, v.modele, v.immatriculation, COUNT(r.idVehicule) as nb_locations " +
-                "FROM vehicule v " +
-                "INNER JOIN reservation r ON v.idVehicule = r.idVehicule " +
-                "GROUP BY v.idVehicule " +
+        String sql = "SELECT v.marque, v.modele, v.immatriculation, COUNT(c.idContrat) AS nb_locations " +
+                "FROM vehicule v INNER JOIN reservation r ON v.idVehicule = r.idVehicule " +
+                "INNER JOIN contratlocation c ON c.idReservation = r.idReservation " +
+                "WHERE " + periodPredicate("r.dateDemande", mois) +
+                " GROUP BY v.idVehicule, v.marque, v.modele, v.immatriculation " +
                 "ORDER BY nb_locations DESC LIMIT 5";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                Map<String, Object> vehicule = new HashMap<>();
-                vehicule.put("marque", rs.getString("marque"));
-                vehicule.put("modele", rs.getString("modele"));
-                vehicule.put("immatriculation", rs.getString("immatriculation"));
-                vehicule.put("nb_locations", rs.getInt("nb_locations"));
-                topVehicules.add(vehicule);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            bindPeriod(stmt, 1, annee, mois);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> vehicule = new HashMap<>();
+                    vehicule.put("marque", rs.getString("marque"));
+                    vehicule.put("modele", rs.getString("modele"));
+                    vehicule.put("immatriculation", rs.getString("immatriculation"));
+                    vehicule.put("nb_locations", rs.getInt("nb_locations"));
+                    topVehicules.add(vehicule);
+                }
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
         return topVehicules;
     }
 
-    public List<Map<String, Object>> getTopClients() {
+    public List<Map<String, Object>> getTopClients(int annee, Integer mois) throws SQLException {
         List<Map<String, Object>> topClients = new ArrayList<>();
-
-        String sql = "SELECT c.nom, c.prenom, c.email, COUNT(r.idReservation) as nb_reservations " +
-                "FROM client c " +
-                "INNER JOIN reservation r ON c.idClient = r.idClient " +
-                "GROUP BY c.idClient " +
+        String sql = "SELECT c.nom, c.prenom, c.email, COUNT(r.idReservation) AS nb_reservations " +
+                "FROM client c INNER JOIN reservation r ON c.idClient = r.idClient " +
+                "WHERE " + periodPredicate("r.dateDemande", mois) +
+                " GROUP BY c.idClient, c.nom, c.prenom, c.email " +
                 "ORDER BY nb_reservations DESC LIMIT 5";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                Map<String, Object> client = new HashMap<>();
-                client.put("nom", rs.getString("nom"));
-                client.put("prenom", rs.getString("prenom"));
-                client.put("email", rs.getString("email"));
-                client.put("nb_reservations", rs.getInt("nb_reservations"));
-                topClients.add(client);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            bindPeriod(stmt, 1, annee, mois);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Map<String, Object> client = new HashMap<>();
+                    client.put("nom", rs.getString("nom"));
+                    client.put("prenom", rs.getString("prenom"));
+                    client.put("email", rs.getString("email"));
+                    client.put("nb_reservations", rs.getInt("nb_reservations"));
+                    topClients.add(client);
+                }
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
         return topClients;
     }
 
-    public Map<String, Integer> getReservationStatusDistribution() {
+    public Map<String, Integer> getReservationStatusDistribution(int annee, Integer mois) throws SQLException {
         Map<String, Integer> distribution = new HashMap<>();
-
-        String sql = "SELECT statut, COUNT(*) as count FROM reservation GROUP BY statut";
+        String sql = "SELECT statut, COUNT(*) AS total FROM reservation WHERE " +
+                periodPredicate("dateDemande", mois) + " GROUP BY statut";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                distribution.put(rs.getString("statut"), rs.getInt("count"));
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            bindPeriod(stmt, 1, annee, mois);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    distribution.put(rs.getString("statut"), rs.getInt("total"));
+                }
             }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-
         return distribution;
     }
-
-    // ===== MÉTHODES UTILITAIRES =====
 
     private int getCount(Connection conn, String tableName) throws SQLException {
         String sql = "SELECT COUNT(*) FROM " + tableName;
         try (Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            if (rs.next()) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+    private int getPeriodCount(Connection conn, String sql, int annee, Integer mois) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            bindPeriod(stmt, 1, annee, mois);
+            try (ResultSet rs = stmt.executeQuery()) {
+                rs.next();
                 return rs.getInt(1);
             }
         }
-        return 0;
     }
 
-    private double getSum(Connection conn, String tableName, String column, String condition) throws SQLException {
-        String sql = "SELECT SUM(" + column + ") FROM " + tableName;
-        if (condition != null && !condition.isEmpty()) {
-            sql += " WHERE " + condition;
-        }
-        try (Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            if (rs.next()) {
+    private double getPeriodSum(Connection conn, String sql, int annee, Integer mois) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            bindPeriod(stmt, 1, annee, mois);
+            try (ResultSet rs = stmt.executeQuery()) {
+                rs.next();
                 return rs.getDouble(1);
             }
         }
-        return 0.0;
+    }
+
+    private String periodPredicate(String dateColumn, Integer mois) {
+        return "YEAR(" + dateColumn + ") = ?" + (mois == null ? "" : " AND MONTH(" + dateColumn + ") = ?");
+    }
+
+    private void bindPeriod(PreparedStatement stmt, int firstParameter, int annee, Integer mois)
+            throws SQLException {
+        stmt.setInt(firstParameter, annee);
+        if (mois != null) {
+            stmt.setInt(firstParameter + 1, mois);
+        }
     }
 }

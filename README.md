@@ -12,9 +12,9 @@ Application desktop Java (JavaFX + MySQL/MariaDB) qui informatise la gestion d'u
 - Réservations : validation / refus / annulation, création directe pour un client au comptoir, contrôle de disponibilité du véhicule sur la période
 - Contrats : créés automatiquement à la validation d'une réservation ; clôture avec état du retour, kilométrage, frais (retard, carburant, dégradation, remise) et génération de contrats PDF
 - Factures : générées automatiquement à la clôture du contrat, statut impayée / partielle / payée, génération de factures PDF détaillées en FCFA
-- Paiements : espèces, carte, virement, chèque, Wave, Orange Money, Free Money (montants en FCFA)
+- Paiements : espèces, carte, virement, chèque, Wave, Orange Money, Free Money (montants en FCFA), avec icônes vectorielles et libellés lisibles
 - Sanctions : créées automatiquement en cas de dégradation, levées au paiement de la facture
-- Statistiques : chiffre d'affaires, évolution mensuelle, top véhicules / clients
+- Statistiques : chiffre d'affaires encaissé calculé à partir des paiements, réservations par période, répartition par statut et top véhicules / clients filtrables par année et mois
 
 **Espace client**
 - Inscription et connexion

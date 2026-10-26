@@ -9,7 +9,10 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Text;
+import org.kordamp.ikonli.fontawesome5.FontAwesomeSolid;
+import org.kordamp.ikonli.javafx.FontIcon;
 
+import java.time.Year;
 import java.util.Map;
 
 public class StatistiqueView {
@@ -34,6 +37,7 @@ public class StatistiqueView {
     private Label totalClientsLabel;
     private Label totalVehiculesLabel;
     private Label totalReservationsLabel;
+    private Label dataStatusLabel;
 
     public StatistiqueView() {
         initUI();
@@ -58,11 +62,17 @@ public class StatistiqueView {
         contentContainer.setFillWidth(true);
 
         // Titre
-        Label titleLabel = new Label("📊 Tableau de Bord Statistique");
+        Label titleLabel = new Label("Tableau de bord statistique");
+        titleLabel.setGraphic(icon(FontAwesomeSolid.CHART_BAR, "#2878a5", 18));
         titleLabel.setStyle("-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         // Barre de filtres
         HBox filterBar = createFilterBar();
+        dataStatusLabel = new Label();
+        dataStatusLabel.setWrapText(true);
+        dataStatusLabel.setStyle("-fx-text-fill: #b42318; -fx-font-weight: bold;");
+        dataStatusLabel.setManaged(false);
+        dataStatusLabel.setVisible(false);
 
         // Cartes statistiques
         cardsGrid = createCardsGrid();
@@ -83,6 +93,7 @@ public class StatistiqueView {
         contentContainer.getChildren().addAll(
                 titleLabel,
                 filterBar,
+                dataStatusLabel,
                 cardsGrid,
                 chartSection,
                 pieChartSection,
@@ -101,7 +112,7 @@ public class StatistiqueView {
         filterBar.setAlignment(Pos.CENTER_LEFT);
         filterBar.setPadding(new Insets(5, 0, 10, 0));
 
-        Label filterLabel = new Label("📅 Filtres :");
+        Label filterLabel = new Label("Filtres :");
         filterLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: #34495e;");
 
         // Année
@@ -109,10 +120,10 @@ public class StatistiqueView {
         anneeLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: #34495e;");
 
         anneeComboBox = new ComboBox<>();
-        for (int i = 2020; i <= 2026; i++) {
+        for (int i = 2020; i <= Year.now().getValue(); i++) {
             anneeComboBox.getItems().add(i);
         }
-        anneeComboBox.setValue(2026);
+        anneeComboBox.setValue(Year.now().getValue());
         anneeComboBox.setPrefWidth(80);
         anneeComboBox.getStyleClass().add("input-field");
 
@@ -130,7 +141,8 @@ public class StatistiqueView {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        actualiserButton = new Button("🔄 Actualiser");
+        actualiserButton = new Button("Actualiser");
+        actualiserButton.setGraphic(icon(FontAwesomeSolid.SYNC_ALT, "#ffffff", 13));
         actualiserButton.getStyleClass().add("action-button");
         actualiserButton.setStyle("-fx-background-color: #3498db; -fx-text-fill: white; -fx-pref-height: 32; -fx-padding: 0 20; -fx-background-radius: 4; -fx-cursor: hand; -fx-font-weight: bold;");
 
@@ -146,15 +158,16 @@ public class StatistiqueView {
         grid.setAlignment(Pos.CENTER);
 
         // Création des cartes
-        caTotalLabel = createStatCard(grid, "💰 Chiffre d'affaires", "0 €", 0, 0, 2);
-        totalClientsLabel = createStatCard(grid, "👥 Clients", "0", 0, 2, 1);
-        totalVehiculesLabel = createStatCard(grid, "🚗 Véhicules", "0", 1, 0, 1);
-        totalReservationsLabel = createStatCard(grid, "📅 Réservations", "0", 1, 2, 1);
+        caTotalLabel = createStatCard(grid, "Chiffre d'affaires encaissé", FontAwesomeSolid.MONEY_BILL_ALT, "0 FCFA", 0, 0, 2);
+        totalClientsLabel = createStatCard(grid, "Clients", FontAwesomeSolid.USERS, "0", 0, 2, 1);
+        totalVehiculesLabel = createStatCard(grid, "Véhicules", FontAwesomeSolid.CAR, "0", 1, 0, 1);
+        totalReservationsLabel = createStatCard(grid, "Réservations (période)", FontAwesomeSolid.CALENDAR_ALT, "0", 1, 2, 1);
 
         return grid;
     }
 
-    private Label createStatCard(GridPane grid, String title, String value, int row, int col, int colspan) {
+    private Label createStatCard(GridPane grid, String title, FontAwesomeSolid icon,
+                                 String value, int row, int col, int colspan) {
         VBox card = new VBox();
         card.setAlignment(Pos.CENTER);
         card.setSpacing(5);
@@ -166,6 +179,7 @@ public class StatistiqueView {
         HBox.setHgrow(card, Priority.ALWAYS);
 
         Label titleLabel = new Label(title);
+        titleLabel.setGraphic(icon(icon, "#64748b", 14));
         titleLabel.setStyle("-fx-font-size: 13; -fx-text-fill: #7f8c8d;");
 
         Label valueLabel = new Label(value);
@@ -185,7 +199,8 @@ public class StatistiqueView {
         section.setPadding(new Insets(15));
         section.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);");
 
-        Label title = new Label("📈 Évolution mensuelle des réservations");
+        Label title = new Label("Évolution mensuelle des réservations");
+        title.setGraphic(icon(FontAwesomeSolid.CHART_LINE, "#2878a5", 15));
         title.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         // Création du graphique
@@ -209,7 +224,8 @@ public class StatistiqueView {
         section.setPadding(new Insets(15));
         section.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);");
 
-        Label title = new Label("📊 Répartition des réservations par statut");
+        Label title = new Label("Répartition des réservations par statut");
+        title.setGraphic(icon(FontAwesomeSolid.CHART_PIE, "#2878a5", 15));
         title.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         statusPieChart = new PieChart();
@@ -234,12 +250,14 @@ public class StatistiqueView {
         section.setPadding(new Insets(15));
         section.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);");
 
-        Label title = new Label("🏆 Top 5 des véhicules les plus loués");
+        Label title = new Label("Top 5 des véhicules loués");
+        title.setGraphic(icon(FontAwesomeSolid.CAR, "#2878a5", 15));
         title.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         topVehiculesTable = new TableView<>();
         topVehiculesTable.setPrefHeight(200);
         topVehiculesTable.getStyleClass().add("table-view");
+        topVehiculesTable.setPlaceholder(new Label("Aucune location contractualisée pour cette période."));
 
         section.getChildren().addAll(title, topVehiculesTable);
         return section;
@@ -251,12 +269,14 @@ public class StatistiqueView {
         section.setPadding(new Insets(15));
         section.setStyle("-fx-background-color: white; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);");
 
-        Label title = new Label("🏆 Top 5 des clients les plus actifs");
+        Label title = new Label("Top 5 des clients les plus actifs");
+        title.setGraphic(icon(FontAwesomeSolid.USERS, "#2878a5", 15));
         title.setStyle("-fx-font-size: 15; -fx-font-weight: bold; -fx-text-fill: #2c3e50;");
 
         topClientsTable = new TableView<>();
         topClientsTable.setPrefHeight(200);
         topClientsTable.getStyleClass().add("table-view");
+        topClientsTable.setPlaceholder(new Label("Aucune réservation pour cette période."));
 
         section.getChildren().addAll(title, topClientsTable);
         return section;
@@ -310,5 +330,18 @@ public class StatistiqueView {
 
     public Label getTotalReservationsLabel() {
         return totalReservationsLabel;
+    }
+
+    public void setDataStatus(String message, boolean error) {
+        dataStatusLabel.setText(message);
+        dataStatusLabel.setVisible(error && message != null && !message.isBlank());
+        dataStatusLabel.setManaged(dataStatusLabel.isVisible());
+    }
+
+    private FontIcon icon(FontAwesomeSolid code, String color, int size) {
+        FontIcon icon = new FontIcon(code);
+        icon.setIconColor(javafx.scene.paint.Color.web(color));
+        icon.setIconSize(size);
+        return icon;
     }
 }
