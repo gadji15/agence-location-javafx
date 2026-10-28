@@ -15,7 +15,9 @@ public class ClientDao {
 
     // CREATE - Ajouter un client
     public boolean create(Client client) {
-        String sql = "INSERT INTO client (nom, prenom, email, telephone, adresse, actif) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO client "
+                + "(nom, prenom, email, telephone, adresse, permisConduire, actif) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -25,6 +27,7 @@ public class ClientDao {
             stmt.setString(3, client.getEmail());
             stmt.setString(4, client.getTelephone());
             stmt.setString(5, client.getAdresse());
+            stmt.setString(9, client.getPermisConduire());
             stmt.setBoolean(6, client.isActif());
 
             int affectedRows = stmt.executeUpdate();
@@ -130,8 +133,9 @@ public class ClientDao {
 
     // UPDATE - Modifier un client
     public boolean update(Client client) {
-        String sql = "UPDATE client SET nom = ?, prenom = ?, email = ?, telephone = ?, adresse = ?, actif = ? WHERE idClient = ?";
-
+        String sql = "UPDATE client SET nom = ?, prenom = ?, email = ?, "
+                + "telephone = ?, adresse = ?, permisConduire = ?, "
+                + "actif = ? WHERE idClient = ?";
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
@@ -140,6 +144,7 @@ public class ClientDao {
             stmt.setString(3, client.getEmail());
             stmt.setString(4, client.getTelephone());
             stmt.setString(5, client.getAdresse());
+            stmt.setString(9, client.getPermisConduire());
             stmt.setBoolean(6, client.isActif());
             stmt.setInt(7, client.getIdClient());
 
@@ -257,6 +262,7 @@ public class ClientDao {
         client.setEmail(rs.getString("email"));
         client.setTelephone(rs.getString("telephone"));
         client.setAdresse(rs.getString("adresse"));
+        client.setPermisConduire(rs.getString("permisConduire"));
 
         Timestamp timestamp = rs.getTimestamp("dateInscription");
         if (timestamp != null) {

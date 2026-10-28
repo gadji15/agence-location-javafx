@@ -37,6 +37,7 @@ public class ClientManagementView {
     private TextField emailField;
     private TextField telephoneField;
     private TextArea adresseArea;
+    private TextField permisConduireField;
     private CheckBox actifCheckBox;
     private Button saveButton;
     private Button cancelButton;
@@ -316,6 +317,18 @@ public class ClientManagementView {
         formGrid.add(adresseArea, 1, row, 3, 1);
 
         row++;
+
+        Label permisLabel = new Label("Permis de conduire *");
+        permisLabel.setStyle("-fx-font-weight: 600; -fx-text-fill: #34495e;");
+        permisConduireField = new TextField();
+        permisConduireField.setPromptText("Numéro du permis de conduire");
+        permisConduireField.setPrefWidth(300);
+        permisConduireField.getStyleClass().add("input-field");
+
+        formGrid.add(permisLabel, 0, row);
+        formGrid.add(permisConduireField, 1, row, 3, 1);
+
+        row++;
         actifCheckBox = new CheckBox("Client actif");
         actifCheckBox.setSelected(true);
         actifCheckBox.setStyle("-fx-font-weight: 600; -fx-text-fill: #34495e;");
@@ -371,6 +384,11 @@ public class ClientManagementView {
         emailField.setText(client.getEmail());
         telephoneField.setText(client.getTelephone());
         adresseArea.setText(client.getAdresse());
+        permisConduireField.setText(
+                client.getPermisConduire() == null
+                        ? ""
+                        : client.getPermisConduire()
+        );
         actifCheckBox.setSelected(client.isActif());
 
         deleteButton.setVisible(true);
@@ -394,6 +412,7 @@ public class ClientManagementView {
         emailField.clear();
         telephoneField.clear();
         adresseArea.clear();
+        permisConduireField.clear();
         actifCheckBox.setSelected(true);
         errorLabel.setVisible(false);
         errorLabel.setText("");
@@ -458,6 +477,8 @@ public class ClientManagementView {
     public TextArea getAdresseArea() {
         return adresseArea;
     }
+
+    public TextField getPermisConduireField() { return permisConduireField;}
 
     public CheckBox getActifCheckBox() {
         return actifCheckBox;

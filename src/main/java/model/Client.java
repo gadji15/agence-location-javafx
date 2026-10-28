@@ -9,6 +9,7 @@ public class Client {
     private String email;
     private String telephone;
     private String adresse;
+    private String permisConduire;
     private LocalDateTime dateInscription;
     private boolean actif;
 
@@ -17,27 +18,34 @@ public class Client {
 
     // Constructeur complet
     public Client(int idClient, String nom, String prenom, String email, String telephone,
-                  String adresse, LocalDateTime dateInscription, boolean actif) {
+                  String adresse, String permisConduire, LocalDateTime dateInscription, boolean actif) {
         this.idClient = idClient;
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.telephone = telephone;
         this.adresse = adresse;
+        this.permisConduire = permisConduire;
         this.dateInscription = dateInscription;
         this.actif = actif;
     }
 
     // Constructeur sans ID (pour création)
     public Client(String nom, String prenom, String email, String telephone,
-                  String adresse, boolean actif) {
+                  String adresse, String permisConduire,  boolean actif) {
         this.nom = nom;
         this.prenom = prenom;
         this.email = email;
         this.telephone = telephone;
         this.adresse = adresse;
+        this.permisConduire = permisConduire;
         this.actif = actif;
         this.dateInscription = LocalDateTime.now();
+    }
+    // Ancien constructeur conservé pour les appels existants
+    public Client(String nom, String prenom, String email,
+                  String telephone, String adresse, boolean actif) {
+        this(nom, prenom, email, telephone, adresse, null, actif);
     }
 
     // Getters et Setters
@@ -59,6 +67,9 @@ public class Client {
     public String getAdresse() { return adresse; }
     public void setAdresse(String adresse) { this.adresse = adresse; }
 
+    public String getPermisConduire() { return permisConduire; }
+    public void setPermisConduire(String permisConduire) {this.permisConduire = permisConduire; }
+
     public LocalDateTime getDateInscription() { return dateInscription; }
     public void setDateInscription(LocalDateTime dateInscription) { this.dateInscription = dateInscription; }
 
@@ -74,4 +85,9 @@ public class Client {
     public String toString() {
         return getFullName();
     }
+
+
+
+
+
 }

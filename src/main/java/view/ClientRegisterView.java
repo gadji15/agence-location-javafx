@@ -22,6 +22,7 @@ public class ClientRegisterView {
     private TextField emailField;
     private TextField telephoneField;
     private TextField adresseField;
+    private TextField permisConduireField;
     private PasswordField passwordField;
     private PasswordField confirmPasswordField;
     private Button registerButton;
@@ -209,6 +210,21 @@ public class ClientRegisterView {
         formGrid.add(adresseLabel, 0, row);
         formGrid.add(adresseField, 1, row, 3, 1);
 
+        // Permis de conduire
+        row++;
+
+        Label permisLabel = new Label("Permis de conduire *");
+        permisLabel.setStyle("-fx-font-size: 13; -fx-font-weight: 600; -fx-text-fill: #34495e;");
+        permisLabel.setMinWidth(70);
+        permisConduireField = new TextField();
+        permisConduireField.setPromptText("Numéro du permis de conduire");
+        permisConduireField.setPrefWidth(250);
+        permisConduireField.setMaxWidth(Double.MAX_VALUE);
+        permisConduireField.setStyle("-fx-pref-height: 36; -fx-background-color: #f8f9fa; -fx-background-radius: 5; -fx-border-color: #dde1e6; -fx-border-radius: 5; -fx-border-width: 1; -fx-padding: 0 12 0 12; -fx-font-size: 13;");
+
+        formGrid.add(permisLabel, 0, row);
+        formGrid.add(permisConduireField, 1, row, 3, 1);
+
         // Mot de passe
         row++;
         Label passwordLabel = new Label("Mot de passe *");
@@ -309,6 +325,7 @@ public class ClientRegisterView {
         emailField.clear();
         telephoneField.clear();
         adresseField.clear();
+        permisConduireField.clear();
         passwordField.clear();
         confirmPasswordField.clear();
         errorLabel.setText("");
@@ -324,6 +341,7 @@ public class ClientRegisterView {
     public TextField getEmailField() { return emailField; }
     public TextField getTelephoneField() { return telephoneField; }
     public TextField getAdresseField() { return adresseField; }
+    public TextField getPermisConduireField() {return permisConduireField;}
     public PasswordField getPasswordField() { return passwordField; }
     public PasswordField getConfirmPasswordField() { return confirmPasswordField; }
     public Button getRegisterButton() { return registerButton; }

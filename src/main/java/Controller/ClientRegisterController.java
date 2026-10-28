@@ -68,6 +68,7 @@ public class ClientRegisterController {
         String email = view.getEmailField().getText().trim();
         String telephone = view.getTelephoneField().getText().trim();
         String adresse = view.getAdresseField().getText().trim();
+        String permisConduire = view.getPermisConduireField().getText().trim();
         String password = view.getPasswordField().getText().trim();
         String confirmPassword = view.getConfirmPasswordField().getText().trim();
 
@@ -77,8 +78,9 @@ public class ClientRegisterController {
         System.out.println("========================================");
 
         // Validation des champs obligatoires
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || telephone.isEmpty() || password.isEmpty()) {
-            view.showError("⚠️ Tous les champs marqués * sont obligatoires !");
+        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || telephone.isEmpty() || permisConduire.isEmpty() || password.isEmpty()) {
+            view.showError(
+                    "⚠️ Veuillez remplir tous les champs obligatoires.");
             return;
         }
 
@@ -114,7 +116,7 @@ public class ClientRegisterController {
         }
 
         // Créer le client
-        Client newClient = new Client(nom, prenom, email, telephone, adresse, true);
+        Client newClient = new Client(nom, prenom, email, telephone, adresse, permisConduire, true);
 
         if (clientDAO.create(newClient)) {
             if (createUserAccount(newClient.getIdClient(), email, password)) {

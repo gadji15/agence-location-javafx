@@ -165,11 +165,16 @@ public class ClientController {
         String email = view.getEmailField().getText().trim();
         String telephone = view.getTelephoneField().getText().trim();
         String adresse = view.getAdresseArea().getText().trim();
+        String permisConduire = view.getPermisConduireField().getText().trim();
         boolean actif = view.getActifCheckBox().isSelected();
 
         // Validation des champs obligatoires
-        if (nom.isEmpty() || prenom.isEmpty() || email.isEmpty() || telephone.isEmpty()) {
-            view.showError("⚠️ Les champs Nom, Prénom, Email et Téléphone sont obligatoires !");
+        if (nom.isEmpty() || prenom.isEmpty()
+                || email.isEmpty() || telephone.isEmpty()
+                || permisConduire.isEmpty()) {
+            view.showError(
+                    "⚠️ Les champs Nom, Prénom, Email, Téléphone et Permis de conduire sont obligatoires."
+            );
             return;
         }
 
@@ -203,7 +208,8 @@ public class ClientController {
                 return;
             }
 
-            Client newClient = new Client(nom, prenom, email, telephone, adresse, actif);
+            Client newClient = new Client(
+                    nom, prenom, email, telephone, adresse, permisConduire, actif);
 
             if (clientDAO.create(newClient)) {
                 showSuccess("✅ Client ajouté avec succès !");
@@ -224,6 +230,7 @@ public class ClientController {
             selected.setEmail(email);
             selected.setTelephone(telephone);
             selected.setAdresse(adresse);
+            selected.setPermisConduire(permisConduire);
             selected.setActif(actif);
 
             if (clientDAO.update(selected)) {
